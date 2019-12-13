@@ -12,15 +12,25 @@ fft_size = 2048
 time_slots = 128
 input_frames_per_block = int(rate*input_block_time)
 
+note_names = ['C', 'C#', 'D', 'D#', 'E', 'F', 'G', 'G#', 'A', 'A#', 'B']
+
 def get_rms(block):
     return np.sqrt(np.mean(np.square(block)))
+
+def note_num_to_freq(note_num):
+    return 440*2**((note_num-69)/12)
+    
+def freq_to_note_num(freq):
+    return int(round(69+12*np.log2(freq/440.0)))
+
+def note_num_to_note_name(note_num):
+    return note_names[note_num % 12] + str(note_num/12-1)
 
 class AudioHandler(object):
     def __init__(self):
         self.pa = pyaudio.PyAudio()
         self.stream = self.open_mic_stream()
         self.threshold = threshold
-        self.spec = np.zeros((int(fft_size/2+1), time_slots), dtype=float)
         #self.start = time.time()
         #self.end = 0
 
@@ -56,16 +66,10 @@ class AudioHandler(object):
        
     def fft_process(self, block):
         freq = np.absolute(np.fft.rfft(block, n=fft_size))
-        self.spec = np.roll(self.spec, -1, axis=1)
-        self.spec[:,-1] = freq
-        #self.end = time.time()
-        #print(self.end-self.start)
-        #self.start = time.time()
-
-        plt.clf()
-        plt.pcolormesh(self.spec, cmap='inferno', vmin=0, vmax=70000)
-        plt.gcf().tight_layout()
-        plt.pause(0.00001)
+        fundamental = np.argmax(freq)/(len(freq)-1)*rate/2
+        note_num = freq_to_note_num(fundamental)
+        note_name = note_num_to_note_name(note_num)
+        print('Frequency: {:.2f} Hz, Note Number: {}, Note Name: {}'.format(fundamental, note_num, note_name))
 
     def listen(self):
         try:
