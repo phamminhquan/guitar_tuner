@@ -1,9 +1,6 @@
 import pyaudio
 import numpy as np
 import struct
-from scipy import signal
-import matplotlib.pyplot as plt
-import time
 
 threshold = 10
 rate = 16000
