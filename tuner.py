@@ -24,7 +24,10 @@ def freq_to_note_num(freq):
     return int(round(69+12*np.log2(freq/440.0)))
 
 def note_num_to_note_name(note_num):
-    return note_names[note_num % 12] + str(note_num/12-1)
+    if note_num % 12 < 11:
+        return note_names[note_num % 12] + str(note_num/12-1)
+    else:
+        return 'Invalid'
 
 class AudioHandler(object):
     def __init__(self):
