@@ -12,7 +12,7 @@ fft_size = 2048
 time_slots = 128
 input_frames_per_block = int(rate*input_block_time)
 
-note_names = ['C', 'C#', 'D', 'D#', 'E', 'F', 'G', 'G#', 'A', 'A#', 'B']
+note_names = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 
 def get_rms(block):
     return np.sqrt(np.mean(np.square(block)))
@@ -24,10 +24,7 @@ def freq_to_note_num(freq):
     return int(round(69+12*np.log2(freq/440.0)))
 
 def note_num_to_note_name(note_num):
-    if note_num % 12 < 11:
-        return note_names[note_num % 12] + str(note_num/12-1)
-    else:
-        return 'Invalid'
+    return note_names[note_num % 12] + '{:.2f}'.format(note_num/12-1)
 
 class AudioHandler(object):
     def __init__(self):
